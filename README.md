@@ -1,159 +1,111 @@
 Cloud-Hosted Active Directory & Identity Management Infrastructure Lab
 📌 Project Overview & Objectives
 🔍 Business Case & Purpose
-
-Managing users and security policies machine-by-machine doesn't work in an enterprise environment. It is impossible to scale. This lab solves that problem by building a centralized identity management ecosystem from scratch.
-
-Using Microsoft Azure, I set up a corporate Active Directory domain, designed a structured directory topology, used PowerShell to automate repetitive administration, and proved the whole thing worked by authenticating network clients.
+In an enterprise environment, managing user accounts, permissions, and security policies on a machine-by-machine basis is impossible. This project replicates a real-world enterprise infrastructure deployment by establishing a centralized identity management ecosystem.
+Using Microsoft Azure as the infrastructure platform, this lab builds a corporate Active Directory domain from scratch, establishes structured directory topologies, automates administrative overhead via scripting, and validates secure network authentication.
+---
 🛠️ Core Technology Stack
-
-    Cloud Platform: Microsoft Azure
-
-    Operating Systems: Windows Server 2022 Datacenter, Windows 10/11 Pro Enterprise Client
-
-    Directory Services: Active Directory Domain Services (AD DS), Integrated Domain Name System (DNS)
-
-    Automation & Scripting: PowerShell (CLI Administrative Shell)
-
-    Networking Architecture: Azure Virtual Networks (VNets), Network Security Groups (NSGs), Private Static IP Provisioning
-
+Cloud Platform: Microsoft Azure
+Operating Systems: Windows Server 2022 Datacenter, Windows 10/11 Pro Enterprise Client
+Directory Services: Active Directory Domain Services (AD DS), Integrated Domain Name System (DNS)
+Automation & Scripting: PowerShell (CLI Administrative Shell)
+Networking Architecture: Azure Virtual Networks (VNets), Network Security Groups (NSGs), Private Static IP Provisioning
+---
 🎓 Engineering Competencies Demonstrated
-
-    Deployed cloud infrastructure while keeping an eye on costs and resource lifecycles.
-
-    Built secure identity boundaries and managed access controls (IAM).
-
-    Designed clean, scalable Organizational Unit (OU) structures using industry naming standards.
-
-    Used command-line automation to spin up accounts fast, cutting out human error.
-
-    Connected client machines to servers to build a secure authentication pipeline.
-
+Deployed cloud-hosted infrastructure with strict cost-mitigation and resource life-cycle management.
+Configured enterprise-grade identity boundaries and access control vectors (IAM).
+Designed scalable, industry-standard Organizational Unit (OU) naming conventions and structures.
+Leveraged command-line automation to handle high-volume administrative tasks, minimizing manual operational errors.
+Engineered secure, end-to-end client-to-server directory authentication pipelines.
+---
 [PRO TIP: Once you finish the lab, this is a great place to put a screenshot of your finished network topology map or your cloud resource dashboard!]
+
 ☁️ Step 1: Infrastructure Provisioning & Network Configuration
 ⚙️ Implementation Phase
-
-    Virtual Network Deployment: I spun up an isolated Virtual Network (VNet) in Azure with a 10.0.0.0/16 address space. This acts as our secure network boundary.
-
-    Static IP Allocation: I provisioned DC-01, a Windows Server 2022 Datacenter VM, and locked it down with a static internal IP of 10.0.0.4. DNS and directory services need a permanent home to work properly.
-
-    Network Security Subnetting: I carved out a backend subnet (10.0.0.0/24) to keep these corporate resources safe from the public internet.
-
+Virtual Network Deployment: Created an isolated Virtual Network (VNet) in Azure with a dedicated `10.0.0.0/16` address space to serve as the corporate network perimeter.
+Static IP Allocation: Provisioned the primary Virtual Machine (`DC-01`) running Windows Server 2022 Datacenter and explicitly assigned it a static internal IP address of `10.0.0.4`. This guarantees that directory and DNS services remain anchored to a permanent network location.
+Network Security Subnetting: Configured an explicit backend subnet (`10.0.0.0/24`) to separate enterprise resources from the public-facing internet interface.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Head over to your Azure Portal, open the Virtual Machines dashboard, and grab a screenshot showing your DC-01 server running with its Private IP address explicitly set to 10.0.0.4.
-
+> \\\*\\\*What to capture:\\\*\\\* Open your \\\*\\\*Azure Portal\\\*\\\*, navigate to your Virtual Machines dashboard, and take a snippet showing your `DC-01` server running with its Private IP address explicitly showing as `10.0.0.4`.
+![Azure Virtual Machine Dashboard](images/azure_vm_provision.png)
+(Note: Replace "images/azure_vm_provision.png" with your actual screenshot link later!)
 🗄️ Step 2: AD DS Installation & Domain Controller Promotion
 ⚙️ Implementation Phase
-
-    Directory Services Deployment: I used Windows Server Manager to install the Active Directory Domain Services (AD DS) role and integrated DNS.
-
-    Forest Infrastructure Creation: I promoted the server to a primary Domain Controller. This created a brand-new Active Directory forest root domain named mydomain.local.
-
-    Enterprise Identity Anchoring: This process generated the core NTDS.dit database, set up the SYSVOL folder structure, and initialized the schema needed to handle authentication requests across the network.
-
+Directory Services Deployment: Utilized Windows Server Manager to install the Active Directory Domain Services (AD DS) role alongside integrated Domain Name System (DNS) features.
+Forest Infrastructure Creation: Promoted the server to a primary Domain Controller, establishing a completely new Active Directory forest root domain named `mydomain.local` (or your custom domain name).
+Enterprise Identity Anchoring: Initiated the core database creation (`NTDS.dit`), SYSVOL folder structure, and schema initialization required to manage secure enterprise-wide authentication requests.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Open up Server Manager inside your RDP session. Take a quick snippet of the main dashboard showing both the AD DS and DNS roles sitting in the left sidebar with healthy green checkmarks.
-
+> \\\*\\\*What to capture:\\\*\\\* Open your \\\*\\\*Server Manager\\\*\\\* inside your Remote Desktop session. Take a tight snippet of the main dashboard showing the \\\*\\\*AD DS\\\*\\\* and \\\*\\\*DNS\\\*\\\* roles listed in the left-hand sidebar with green status indicators.
+![Active Directory Role Installation](images/ad_ds_installed.png)
 👑 Step 3: Domain Controller Promotion & Forest Initialization
 ⚙️ Implementation Phase
-
-    Active Directory Forest Promotion: I finished the promotion steps to establish DC-01 as the root authority for the mydomain.local forest namespace.
-
-    Directory Services Restore Mode (DSRM): I set up secure administrator backup and recovery credentials. If the database ever goes sideways, I can fix it offline.
-
-    NetBIOS Configuration: I checked that the NetBIOS domain name (MYDOMAIN) broadcasted properly so older protocols can still talk to the network.
-
+Active Directory Forest Promotion: Executed the promotion phase to establish `DC-01` as the root domain controller for the `mydomain.local` forest namespace.
+Directory Services Restore Mode (DSRM): Configured secure administrative backup and recovery credentials to ensure database integrity in the event of offline directory maintenance.
+NetBIOS Configuration: Validated NetBIOS domain name propagation (`MYDOMAIN`) to ensure legacy protocol compatibility across the network architecture.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Open Active Directory Users and Computers (dsa.msc), expand your domain root, and click on the Domain Controllers folder. Take a screenshot showing DC-01 explicitly listed as a Global Catalog server.
-
+> \\\*\\\*What to capture:\\\*\\\* Open your \\\*\\\*Active Directory Users and Computers\\\*\\\* administrative tool (`dsa.msc`), expand your domain root name, click on the \\\*\\\*Domain Controllers\\\*\\\* organizational folder, and snap a screenshot showing `DC-01` explicitly listed as a Global Catalog server.
+![Domain Controller Folder Verification](images/dc_promotion_verify.png)
 📁 Step 4: Organizational Unit (OU) Architecture & Design
 ⚙️ Implementation Phase
-
-    Enterprise Structural Design: I mapped out and built a clean Organizational Unit (OU) tree that mirrors what you'd see in a real corporate environment.
-
-    Administrative Segmentation: I created a main root OU called _Production and tucked nested OUs underneath it, specifically _Employees, _Admins, and _Workstations.
-
-    Security & GPO Readiness: Keeping admins separated from regular users makes it much easier to apply targeted Group Policy Objects (GPOs) and delegate rights later.
-
+Enterprise Structural Design: Designed and deployed a customized, logical Organizational Unit (OU) hierarchy to replicate a standard corporate infrastructure.
+Administrative Segmentation: Created a master production root OU (`\\\_Production`) and built nested departmental OUs, including `\\\_Employees`, `\\\_Admins`, and `\\\_Workstations`.
+Security & GPO Readiness: Strategically isolated administrative assets from standard end-user accounts to lay the groundwork for targeted Group Policy Object (GPO) application and delegated administrative rights.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Open Active Directory Users and Computers (dsa.msc). Expand your domain and click on your custom _Production OU structure in the left panel so the whole nested tree is visible.
-
+> \\\*\\\*What to capture:\\\*\\\* Open \\\*\\\*Active Directory Users and Computers\\\*\\\* (`dsa.msc`). Expand your domain and highlight your custom `\\\_Production` OU folder structure in the left-hand tree panel so your entire nested directory hierarchy is cleanly visible.
+![Active Directory OU Structural Design](images/ou_structure_design.png)
 👥 Step 5: Automated Bulk User Provisioning via PowerShell
 ⚙️ Implementation Phase
-
-    Administrative Automation: Creating hundreds of accounts by hand is a waste of time. I used a PowerShell script to handle it automatically, making the deployment instantly scalable.
-
-    CSV Data Ingestion: The script reads a mock employee list from a database file (names.csv), pulling out details like first names, last names, and departments.
-
-    Standardized Identity Generation: The code automatically generated standard User Principal Names (UPNs), set up complex default passwords, and dumped each user into the correct OU.
-
+Administrative Automation: Leveraged PowerShell scripting to eliminate manual account creation overhead, optimizing deployment scaling for large-scale enterprise environments.
+CSV Data Ingestion: Developed/executed a script to parse an external mock employee identity database (`names.csv`), extracting attributes such as first name, last name, and department.
+Standardized Identity Generation: Programmatically generated standardized User Principal Names (UPNs), secure default password complexities, and automatically sorted accounts into their respective destination OUs.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Open Active Directory Users and Computers, look inside your _Employees OU, and take a snippet of the directory filled with the dozens of new accounts your script just built.
-
+> \\\*\\\*What to capture:\\\*\\\* Open your \\\*\\\*Active Directory Users and Computers\\\*\\\* tool, navigate inside your `\\\_Employees` OU, and take a snippet showing the directory populated with dozens of newly script-generated user accounts.
+![Bulk Scripted User Creation Validation](images/bulk_user_creation.png)
 🛡️ Step 6: Security Group Architecture & Role-Based Access Control (RBAC)
 ⚙️ Implementation Phase
-
-    Security Boundary Management: I set up Role-Based Access Control (RBAC) by building specific Security Groups, like HR_Modified and IT_Admins.
-
-    Access Scope Alignment: I organized these groups to match corporate data boundaries. People only get access to what their department allows.
-
-    Scalable Identity Management: Managing permissions at the group level instead of the user level keeps things clean and stops permission creep over time.
-
+Security Boundary Management: Implemented Role-Based Access Control (RBAC) by provisioning explicit Security Groups (e.g., `HR\\\_Modified`, `IT\\\_Admins`) within the directory structure.
+Access Scope Alignment: Structured group objects to match organizational security boundaries, ensuring network resources conform strictly to departmental data isolation mandates.
+Scalable Identity Management: Standardized account permission management by assigning access rights solely to group containers rather than individual user nodes, minimizing permission creep.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Go to your security groups folder in Active Directory Users and Computers (dsa.msc). Double-click an admin or HR group, open the Members tab, and snap a screenshot showing the users assigned to it.
-
+> \\\*\\\*What to capture:\\\*\\\* Open \\\*\\\*Active Directory Users and Computers\\\*\\\* (`dsa.msc`), navigate to your custom security groups container, double-click one of your groups (like an admin or HR group), and take a screenshot of the \\\*\\\*Members\\\*\\\* tab showing users assigned to it.
+![Security Group Membership Verification](images/security_groups_rbac.png)
 💻 Step 7: Client Infrastructure & Network Layer Integration
 ⚙️ Implementation Phase
-
-    Workstation Provisioning: I spun up a separate Windows client VM inside the same Azure VNet to act as our end-user workstation.
-
-    DNS Subnet Alignment: I changed the client's DNS settings to point directly to the static IP of DC-01 (10.0.0.4). Without this, the workstation won't find the domain.
-
-    Domain Integration: I ran through the formal domain join, authenticating the client machine against the mydomain.local forest using domain credentials.
-
+Workstation Provisioning: Deployed an isolated Windows client virtual machine within the managed Azure Virtual Network topology to simulate an end-user workstation environment.
+DNS Subnet Alignment: Manually configured the client workstation's primary DNS address to target the static private IP of `DC-01` (`10.0.0.4`). This network-layer configuration ensures the client can accurately resolve the enterprise domain forest namespace.
+Domain Integration: Executed the formal domain join process, securely authenticating client hardware to the `mydomain.local` forest via central Active Directory credentials.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Open Settings > About or the System Properties window on your Windows client machine. Take a clear screenshot showing the computer name and its active membership in your custom domain.
-
+> \\\*\\\*What to capture:\\\*\\\* Open the \\\*\\\*Settings > About\\\*\\\* or \\\*\\\*System Properties\\\*\\\* panel on your newly joined Windows client machine. Take a crisp screenshot showing the computer's name alongside its active membership inside your custom domain forest.
+![Workstation Domain Join Verification](images/client_domain_join.png)
 🔐 Step 8: Authentication Validation & Identity Lifecycle Testing
 ⚙️ Implementation Phase
-
-    End-to-End Login Verification: To prove the setup works, I logged into the client workstation using one of the fake employee accounts generated by my script.
-
-    Profile Provisioning: The workstation successfully talked to the Domain Controller, pulled down the necessary directory configurations, and built a local profile.
-
-    Network Connectivity Audit: I ran whoami /domain in the command line to verify that the workstation completely recognizes the new domain boundary.
-
+End-to-End Login Verification: Validated directory authentication stability by executing an initial interactive logon to the client workstation using a script-generated end-user account.
+Profile Provisioning: Supervised the initialization of local user profile parameters, verifying that the client workstation successfully requested and cached directory settings from the Domain Controller.
+Network Connectivity Audit: Conducted standard post-logon diagnostic checks (`whoami /domain`) to verify the security identifier context and confirm the system recognizes the managed account boundary.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: While logged into the Windows client machine as a domain user, open the Command Prompt, type whoami or set user, and press enter. Take a screenshot showing the domain name alongside the active user.
-
+> \\\*\\\*What to capture:\\\*\\\* Logged into your Windows client machine, open the \\\*\\\*Command Prompt\\\*\\\*, type `whoami` or `set user`, and hit enter. Take a screenshot showing your custom domain name and the username of the script-generated account you logged in with.
+![Client Authentication Validation](images/client_login_validation.png)
 🌟 Step 9: Advanced Operations, GPOs, & Help Desk Lifecycle Management
 ⚙️ Implementation Phase
-
-    Group Policy Object (GPO) Deployment: I built and linked custom Group Policies to enforce corporate rules. For example, I set up automatic lock screens and standard desktop wallpapers across specific OUs.
-
-    Enterprise Storage Integration: I created a shared network folder on a file server, locked down permissions with NTFS, and used a logon script/GPO to map it as the Z: drive automatically when users log in.
-
-    Help Desk Operational Simulation: I ran through common Tier 1 help desk tasks to simulate daily operations. This included unlocking locked accounts, forcing password resets at next login, and updating security group memberships.
-
+Group Policy Object (GPO) Deployment: Designed and linked custom Group Policies across specific Organizational Units to enforce corporate security compliance (e.g., configuring automatic lock screen timeouts and deploying standard desktop backgrounds).
+Enterprise Storage Integration: Provisioned a centralized file server directory share, configured explicit NTFS share permissions, and engineered a logon script/GPO policy to automatically map a shared network drive (`Z:`) on client workstations.
+Help Desk Operational Simulation: Simulated real-world Tier 1 help desk ticketing lifecycles by executing administrative interventions: manually locking/unlocking user profiles, forcing next-logon password resets, and modifying security group scopes.
+---
 📸 REQUIRED SCREENSHOT PLACEMENT
-
-    What to capture: Open the Group Policy Management Console (gpmc.msc) on your Domain Controller showing your policy linked to an OU, OR open File Explorer on the client machine to show the successfully mapped Z: drive.
-
+> \\\*\\\*What to capture:\\\*\\\* Open your \\\*\\\*Group Policy Management Console\\\*\\\* (`gpmc.msc`) on the Domain Controller showing your custom policy linked to an OU, \\\*\\\*OR\\\*\\\* open "File Explorer" on your Windows client machine showing your successfully mapped network folder share.
+![Group Policy and Storage Verification](images/gpo_and_share_validation.png)
 🛑 Step 10: Resource Lifecycle & Cloud Cost Optimization
 ⚙️ Implementation Phase
-
-    Cloud Resource Deletion: I tore down the infrastructure. I deleted the entire Azure Resource Group containing DC-01, the client machine, and the virtual network.
-
-    Cost Mitigation Management: Cleaning up avoids surprise bills. No idle virtual machines or unattached storage disks were left running.
-
+Cloud Resource Deletion: Executed proper decommissioning protocols for all active cloud assets, safely shutting down and purging the Azure Resource Group containing `DC-01`, the client workstation, and the isolated virtual network.
+Cost Mitigation Management: Implemented best-practice cloud financial hygiene by ensuring no idle compute resources or unattached storage volumes remained active, eliminating ongoing subscription expenditures.
+---
 📈 Skills Demonstrated & Portfolio Conclusion
-
-This 10-step project shows I can build cloud-hosted infrastructure from the ground up. I configured a secure enterprise identity setup, cut down manual work with PowerShell automation, and handled the everyday administrative tasks required to keep a corporate environment running smoothly.
+Through this 11-stage project, I have successfully demonstrated the ability to provision infrastructure within modern cloud architectures, engineer secure enterprise identity topologies, leverage PowerShell automation to minimize manual configuration drift, and implement standard administrative operations essential to supporting a corporate environment.
