@@ -27,7 +27,6 @@ The environment comprises two main virtual machines running on the same Azure Vi
        │ Static Private IP  │◄────────────────────┤   to DC01 IP       │
        └────────────────────┘  Domain Join & Auth └────────────────────┘
 ```
-![Screenshot 0](./screenshots/img00.PNG)
 
 ### 2. Logical Organizational Unit (OU) & Security Group Structure
 The logical design follows the enterprise deployment in that the objects are structured according to **policy and delegation limits** (location-based) rather than a simple list:
@@ -41,7 +40,6 @@ The logical design follows the enterprise deployment in that the objects are str
     *   **`Helpdesk` (Global Security Group):** Global security group for tier-1 helpdesk staff.
     *   **`Accounting` (Global Security Group):** Global security group for financial staff.
     *   **
-
 ---
 
 ## Step-by-Step Implementation
@@ -60,12 +58,18 @@ The logical design follows the enterprise deployment in that the objects are str
     * Set up a strong **Directory Services Restore Mode (DSRM)** password.
 4. Rebooted the server and logged in using the domain administrator account (`LAB\Administrator`).
 
+![Virtual Machines running in Azure](./screenshots/img00.PNG)
+*The Domain Controller and Client Virtual Machines running within Microsoft Azure*
+
 ### Phase 3: Directory Structure Creation & User Provisioning
 The knowledge of the administrative tools was proven by constructing the directory structure using both ADUC GUI and PowerShell scripts.
 
 #### 1. Directory Structure Creation
 *   Top-level OUs created: `_Branches` and `_Groups`.
 *   Location OU created (`Houston`) and branch OUs (`Users`, `Workstations`, `Laptops`) nested with **Protect container from accidental deletion** checked.
+
+![Location-Based OU Hierarchy](./screenshots/img01.PNG)
+*Nested OU hierarchy shown with the Client machine placed in its appropriate location*
 
 #### 2. Provisioning Users and Groups (PowerShell)
 Used PowerShell to create the departments, security groups, and users. Below is the PowerShell script run on **DC01** for provisioning of directory schema:
@@ -91,6 +95,9 @@ Add-ADGroupMember -Identity "Accounting" -Members bmartinez
 Add-ADGroupMember -Identity "ITSupport" -Members cwalker
 ```
 
+![Security Group Memberships](./screenshots/img02.PNG)
+*Security Groups created with Alice Johnson shown as a member of Helpdesk*
+
 ---
 
 ## 🔒 Client VM Integration & Authentication Testing
@@ -102,6 +109,9 @@ Prior to adding the client to the domain, the network adapter of **CLIENT01** wa
 *   Went into **Settings → System → About** from **CLIENT01** and clicked on **Join a domain**.
 *   Entered `lab.local` as the desired domain, used the credentials for the domain administrator, and performed a system reboot.
 *   After joining, checked whether the computer object of **CLIENT01** had been automatically added to the **Computers** container in Active Directory.
+
+![Client Successfully connected to the Domain Controller via DNS](./screenshots/img03.PNG)
+*Client Successfully connected to the Domain Controller via DNS*
 
 ### 3. Remote Desktop Access Delegation
 For testing client-side authentication with Remote Desktop Protocol (RDP), which uses regular domain user credentials, the AD groups were put into the following client-side security group:
@@ -122,6 +132,9 @@ whoami /groups
 
 **Proof of Verification:** The above command was able to return active security identifiers (SIDs) for `LAB\Helpdesk` and `LAB\Domain Users` groups. This means that the Kerberos ticket generation, AD authentication, and security token construction are all working correctly.
 
+![Authentication and Group Membership configuration is functioning](./screenshots/img04.PNG)
+*Authentication and group membership configuration is functioning properly.*
+
 ---
 
 ## 🛡️ Enterprise Hardening & Administration (Bonus Work)
@@ -132,6 +145,9 @@ In order to show some advanced sysadmin skills, a number of infrastructure chang
 The **Default Domain Policy** was edited using the **Group Policy Management Console (GPMC)** in order to apply minimum security requirements for the organization:
 *   **Path:** `Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies → Password Policy`
 *   Set up important variables: **Maximum password age** and **Minimum password length** in order to protect domain users against bruteforce attack.
+
+![Using Group Policy Editing to enforce password requirements](./screenshots/img05.PNG)
+*Group Policy Editing was used to enforce password requirements.*
 
 ### 2. SYSVOL Logon Scripting
 Performed a hybrid-style automation script configuration in order to understand the concept of directory replication:
@@ -152,6 +168,9 @@ Adhered to the **Principle of Least Privilege (PoLP)** by assigning particular d
     *   **Force password change at next logon**
 
 This way, the Helpdesk team is able to manage user tickets for Houston without full admin access.
+
+![Delegating workloads to Helpdesk without giving full Domain Admin rights](./screenshots/img06.PNG)
+*Delegating workloads to Helpdesk without giving full Domain Admin rights*
 
 ### 4. Active Directory Asset Lifecycle Management
 Migrated the **CLIENT01** computer account from the unstructured default container **Computers** into the structured workspace OU of `_Branches → Houston → Workstations`. That ensures Group Policy targeting is applied to this asset.
