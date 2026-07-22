@@ -100,7 +100,7 @@ Add-ADGroupMember -Identity "ITSupport" -Members cwalker
 
 ---
 
-## 🔒 Client VM Integration & Authentication Testing
+## Client VM Integration & Authentication Testing
 
 ### 1. DNS Configuration
 Prior to adding the client to the domain, the network adapter of **CLIENT01** was configured to refer to the static private IP address of **DC01** as its **Preferred DNS Server**. Otherwise, the client will not be able to find the domain controller's SRV records.
@@ -137,7 +137,7 @@ whoami /groups
 
 ---
 
-## 🛡️ Enterprise Hardening & Administration (Bonus Work)
+## Enterprise Hardening & Administration (Extra)
 
 In order to show some advanced sysadmin skills, a number of infrastructure changes were made:
 
@@ -177,7 +177,7 @@ Migrated the **CLIENT01** computer account from the unstructured default contain
 
 ---
 
-## 💡 Core Competencies Shown
+## Core Competencies Shown
 *   **Directory Services Management:** Planning and designing AD DS schemas.
 *   **Cloud Infrastructure Management:** Deployment and integration of numerous cloud resources into Azure virtual networks with static IPs and NSGs.
 *   **Scripting & Automation:** Scripting of PowerShell cmdlets to manage directories and create accounts.
