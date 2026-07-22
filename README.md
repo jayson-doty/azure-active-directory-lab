@@ -27,6 +27,7 @@ The environment comprises two main virtual machines running on the same Azure Vi
        │ Static Private IP  │◄────────────────────┤   to DC01 IP       │
        └────────────────────┘  Domain Join & Auth └────────────────────┘
 ```
+![Screenshot 0](./screenshots/img00.PNG)
 
 ### 2. Logical Organizational Unit (OU) & Security Group Structure
 The logical design follows the enterprise deployment in that the objects are structured according to **policy and delegation limits** (location-based) rather than a simple list:
