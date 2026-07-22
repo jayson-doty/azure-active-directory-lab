@@ -1,16 +1,16 @@
-# Hybrid Cloud Active Directory Domain Services (AD DS) Lab
+# Active Directory Domain Services (AD DS) Lab
 
-This repository documents the end-to-end planning, deployment, and administration of a secure, production-grade **Active Directory Domain Services (AD DS)** environment. Hosted on **Azure virtual infrastructure**, this project simulates a real-world multi-site enterprise network, implementing industry best practices for identity and access management (IAM), logical organizational unit (OU) design, group policy enforcement, and administrative delegation.
+This repository provides an overview of the entire process from the planning to the deployment and management of a secure and production-quality **Active Directory Domain Services (AD DS)** infrastructure. The project is hosted on **virtual infrastructure** on Microsoft Azure and emulates a real-world multi-site corporate network that adheres to the best industry practices of IAM, OU design, GPO implementation and admin delegation.
 
 ---
 
-## 🛠️ Project Architecture & Design
+## Project Architecture & Design
 
 ### 1. Topology & Components
-The environment is composed of two primary virtual machines deployed on the same Azure Virtual Network (VNet) to ensure seamless local routing and DNS resolution:
+The environment comprises two main virtual machines running on the same Azure Virtual Network (VNet):
 
-*   **Domain Controller (DC01):** Windows Server 2022 Datacenter promoted to the forest root domain controller for `lab.local`. Configured with a static private IP to maintain DNS and authentication stability.
-*   **Domain Client (CLIENT01):** Windows Server 2022 Datacenter configured to behave as a standard domain-joined workstation, routed through the Domain Controller for primary DNS.
+*   **Domain Controller (DC01):** This is a Windows Server 2022 Datacenter machine, which has been promoted to be a root domain controller within the forest `lab.local`. It has been assigned a static IP address to help keep the DNS and the authentication stable.
+*   **Domain Client (CLIENT01):** This is a Windows Server 2022 Datacenter machine, which has been set up to work like a standard domain member workstation.
 
 ```
                   ┌──────────────────────────────────────────┐
@@ -29,45 +29,45 @@ The environment is composed of two primary virtual machines deployed on the same
 ```
 
 ### 2. Logical Organizational Unit (OU) & Security Group Structure
-The logical design mirrors enterprise deployments by organizing objects around **policy and delegation boundaries** (location-based) rather than flat lists:
+The logical design follows the enterprise deployment in that the objects are structured according to **policy and delegation limits** (location-based) rather than a simple list:
 
-*   **`_Branches` (Top-Level OU):** Houses branch-specific locations.
-    *   **`Houston` (Branch OU):** Represens a physical site.
-        *   **`Users` (Sub-OU):** Isolates branch-specific user accounts.
-        *   **`Workstations` (Sub-OU):** Isolates branch desktop assets.
-        *   **`Laptops` (Sub-OU):** Isolates branch mobile assets.
-*   **`_Groups` (Centralized Top-Level OU):** Centralizes all global security groups to maintain an efficient, scalable, and auditable role-based access control (RBAC) structure.
-    *   **`Helpdesk` (Global Security Group):** For tier-1 helpdesk personnel.
-    *   **`Accounting` (Global Security Group):** For financial and accounting personnel.
-    *   **`ITSupport` (Global Security Group):** For systems administration and escalation teams.
+*   **`_Branches` (Top-Level OU):** Holds locations specific to each branch.
+    *   **`Houston` (Branch OU):** Represents a physical location.
+        *   **`Users` (Sub-OU):** Holds users specific to each branch.
+        *   **`Workstations` (Sub-OU):** Holds desktop computers specific to each branch.
+        *   **`Laptops` (Sub-OU):** Holds laptops specific to each branch.
+*   **`_Groups` (Top-Level OU):** All global security groups are held here in order to maintain an efficient and scalable RBAC structure.
+    *   **`Helpdesk` (Global Security Group):** Global security group for tier-1 helpdesk staff.
+    *   **`Accounting` (Global Security Group):** Global security group for financial staff.
+    *   **
 
 ---
 
-## 🚀 Step-by-Step Implementation
+## Step-by-Step Implementation
 
-### Phase 1: Virtual Infrastructure Provisioning (Azure)
-1. Deployed **DC01** as a Windows Server 2022 Datacenter VM using a cost-efficient size (e.g., Standard B2s) and standard SSD OS storage.
-2. In the **Networking Tab**, established a new virtual network and subnets, allowing inbound **RDP (3389)** on the network security group (NSG) for management access.
-3. **Critical Networking Step:** Navigated to the network interface (NIC) properties of **DC01** in the Azure Portal and changed the **Private IP assignment** from **Dynamic** to **Static** to prevent local DNS and authentication breaks.
+### Phase 1: Deployment of Virtual Infrastructure (Azure)
+1. Configured **DC01** as a Windows Server 2022 Datacenter VM, choosing an economic VM size (for example, Standard B2s) with standard SSD OS disks.
+2. In the **Networking Tab**, created a new virtual network with subnets, enabling inbound **RDP (3389)** access through the NSG in order to connect and manage the VMs.
+3. **Important Networking Note**: Went to the network interface (NIC) settings of **DC01** in the Azure portal and switched the **Private IP Assignment** to **Static** in order to avoid DNS and authentication issues in the local network.
 
 ### Phase 2: Installing AD DS & Domain Promotion
-1. RDP'ed into the local administrator session of **DC01** and launched **Server Manager**.
-2. Ran the **Add Roles and Features** wizard to install the **Active Directory Domain Services (AD DS)** role and management binaries.
-3. Initiated the **Promotion Wizard** from the Server Manager notification banner:
-    *   Created a brand new Active Directory forest with the root domain name: `lab.local`.
-    *   Enabled **DNS Server** and **Global Catalog (GC)** roles.
-    *   Configured a secure **Directory Services Restore Mode (DSRM)** password for emergency offline recovery.
-4. Rebooted the server and logged in using the newly promoted domain administrator account (`LAB\Administrator`).
+1. RDP’ed into the local administrator session of **DC01** and opened up the **Server Manager** console.
+2. Used the **Add Roles and Features Wizard** to add the **Active Directory Domain Services (AD DS)** role and its management tools.
+3. Launched the **Promotion Wizard** by clicking on the banner of Server Manager:
+    * Created an entirely new Active Directory Forest with root domain `lab.local`.
+    * Added the **DNS Server** and **Global Catalog (GC)** roles.
+    * Set up a strong **Directory Services Restore Mode (DSRM)** password.
+4. Rebooted the server and logged in using the domain administrator account (`LAB\Administrator`).
 
 ### Phase 3: Directory Structure Creation & User Provisioning
-To demonstrate mastery of administrative tools, the directory structure was built utilizing both the Active Directory Users and Computers (ADUC) GUI and automated PowerShell scripts.
+The knowledge of the administrative tools was proven by constructing the directory structure using both ADUC GUI and PowerShell scripts.
 
-#### 1. Directory Structure Execution
-*   Created top-level OUs: `_Branches` and `_Groups`.
-*   Nested the location OU (`Houston`) and branch sub-OUs (`Users`, `Workstations`, `Laptops`) with **Protect container from accidental deletion** enabled to prevent administrative mishaps.
+#### 1. Directory Structure Creation
+*   Top-level OUs created: `_Branches` and `_Groups`.
+*   Location OU created (`Houston`) and branch OUs (`Users`, `Workstations`, `Laptops`) nested with **Protect container from accidental deletion** checked.
 
-#### 2. User & Group Provisioning Script (PowerShell)
-Automated the creation of departments, security groups, and user accounts. The following PowerShell script was executed on **DC01** to provision the directory schema:
+#### 2. Provisioning Users and Groups (PowerShell)
+Used PowerShell to create the departments, security groups, and users. Below is the PowerShell script run on **DC01** for provisioning of directory schema:
 
 ```powershell
 # Define Target Paths
@@ -95,15 +95,15 @@ Add-ADGroupMember -Identity "ITSupport" -Members cwalker
 ## 🔒 Client VM Integration & Authentication Testing
 
 ### 1. DNS Configuration
-Before joining the domain, the network interface of **CLIENT01** was configured to point directly to **DC01**'s static private IP as its **Preferred DNS Server**. Without this step, the client would be unable to locate the domain controller's SRV records.
+Prior to adding the client to the domain, the network adapter of **CLIENT01** was configured to refer to the static private IP address of **DC01** as its **Preferred DNS Server**. Otherwise, the client will not be able to find the domain controller's SRV records.
 
 ### 2. Domain Joining
-*   Navigated to **Settings → System → About** on **CLIENT01** and selected **Join a domain**.
-*   Specified `lab.local` as the target domain, authenticated using domain administrator credentials, and completed the required system reboot.
-*   Once joined, verified that **CLIENT01**'s computer object automatically populated in the default Active Directory **Computers** container.
+*   Went into **Settings → System → About** from **CLIENT01** and clicked on **Join a domain**.
+*   Entered `lab.local` as the desired domain, used the credentials for the domain administrator, and performed a system reboot.
+*   After joining, checked whether the computer object of **CLIENT01** had been automatically added to the **Computers** container in Active Directory.
 
 ### 3. Remote Desktop Access Delegation
-To test client-side authentication via Remote Desktop Protocol (RDP) using standard non-administrative domain credentials, the AD groups were added to the client machine's local security group:
+For testing client-side authentication with Remote Desktop Protocol (RDP), which uses regular domain user credentials, the AD groups were put into the following client-side security group:
 
 ```powershell
 # Grant RDP rights to Domain Security Groups on CLIENT01
@@ -113,53 +113,54 @@ Add-LocalGroupMember -Group "Remote Desktop Users" -Member "LAB\ITSupport"
 ```
 
 ### 4. Authentication and Token Verification
-Logged into **CLIENT01** via Remote Desktop as `LAB\ajohnson`. To prove successful authentication and group policy/token evaluation, a command prompt was opened and the following diagnostic command was run:
+RDP'ed into **CLIENT01** as `LAB\ajohnson`. To demonstrate authentication and group policy/token validation, the command prompt was started and ran the following diagnostic command:
 
 ```cmd
 whoami /groups
 ```
 
-**Verification Proof:** The command successfully outputted active security identifiers (SIDs) showing membership in `LAB\Helpdesk` and `LAB\Domain Users`. This confirms that Kerberos ticket issuance, AD authentication, and security token builds are fully operational across the network.
+**Proof of Verification:** The above command was able to return active security identifiers (SIDs) for `LAB\Helpdesk` and `LAB\Domain Users` groups. This means that the Kerberos ticket generation, AD authentication, and security token construction are all working correctly.
 
 ---
 
 ## 🛡️ Enterprise Hardening & Administration (Bonus Work)
 
-To demonstrate advanced sysadmin competencies, several infrastructure enhancements were performed:
+In order to show some advanced sysadmin skills, a number of infrastructure changes were made:
 
-### 1. Password Policy Enforcement (GPMC)
-Modified the **Default Domain Policy** via the **Group Policy Management Console (GPMC)** to enforce baseline organization security standards:
+### 1. Enforcing Password Policy (GPMC)
+The **Default Domain Policy** was edited using the **Group Policy Management Console (GPMC)** in order to apply minimum security requirements for the organization:
 *   **Path:** `Computer Configuration → Policies → Windows Settings → Security Settings → Account Policies → Password Policy`
-*   Configured key variables: **Maximum password age** and **Minimum password length** to secure domain identities against brute force attacks.
+*   Set up important variables: **Maximum password age** and **Minimum password length** in order to protect domain users against bruteforce attack.
 
-### 2. SYSVOL logon Scripting
-Configured a legacy/hybrid-style automation script to prove understanding of directory-wide file replication:
-*   Created a standard `logon.bat` script containing:
+### 2. SYSVOL Logon Scripting
+Performed a hybrid-style automation script configuration in order to understand the concept of directory replication:
+*   Wrote a simple `logon.bat` script:
     ```cmd
     @echo off
     echo Welcome to the domain
     ```
-*   Placed the file inside the replicated domain folder: `C:\Windows\SYSVOL\sysvol\lab.local\scripts`.
-*   Assigned `logon.bat` to the **Logon script** attribute on user account profiles in ADUC, enabling automatic policy retrieval from the SYSVOL share during session launch.
+*   Put the script in the replicated folder of the domain: `C:\Windows\SYSVOL\sysvol\lab.local\scripts`
+*   Specified `logon.bat` as **Logon script** property for user accounts in ADUC.
 
 ### 3. Helpdesk Administrative Delegation
-Enforced the **Principle of Least Privilege (PoLP)** by delegating specific domain controls without granting full Domain Admin permissions:
-*   Right-clicked the branch `Users` OU under `_Branches → Houston`.
-*   Launched the **Delegation of Control Wizard** and targeted the **Helpdesk** global security group.
-*   Delegated permissions exclusively to:
+Adhered to the **Principle of Least Privilege (PoLP)** by assigning particular domain permissions without giving Domain Admin rights:
+*   Right-clicked the branch `Users` OU of `_Branches → Houston`.
+*   Initiated the **Delegation of Control Wizard** and selected the **Helpdesk** global security group as the target.
+*   Assigned permissions to:
     *   **Reset user passwords**
     *   **Force password change at next logon**
-*   This ensures the Helpdesk group can handle user management tickets for Houston users without full administrator privileges.
+
+This way, the Helpdesk team is able to manage user tickets for Houston without full admin access.
 
 ### 4. Active Directory Asset Lifecycle Management
-Moved **CLIENT01**'s computer account out of the generic, unmanageable default **Computers** container and placed it within the structured branch-specific workspace OU: `_Branches → Houston → Workstations`. This guarantees that location-targeted Group Policies apply correctly to the device.
+Migrated the **CLIENT01** computer account from the unstructured default container **Computers** into the structured workspace OU of `_Branches → Houston → Workstations`. That ensures Group Policy targeting is applied to this asset.
 
 ---
 
-## 🎓 Core Competencies Demonstrated
-*   **Directory Services Management:** Active Directory Domain Services (AD DS) design and schema management.
-*   **Cloud Infrastructure Administration:** Deployed and linked multiple cloud assets on Azure virtual networks using static IP schemes and NSG controls.
-*   **Scripting & Automation:** Formulated and deployed PowerShell cmdlets for directory manipulation and account generation.
-*   **Identity & Access Management (IAM):** Established Role-Based Access Control (RBAC), Global Security Group structures, and user assignments.
-*   **Security & Hardening:** Designed Group Policies, password rules, administrative delegation (least privilege), and logon triggers.
-*   **Enterprise Troubleshooting:** Root-caused DNS resolution issues, Remote Desktop user permissions, and AD authentication flows.
+## 💡 Core Competencies Shown
+*   **Directory Services Management:** Planning and designing AD DS schemas.
+*   **Cloud Infrastructure Management:** Deployment and integration of numerous cloud resources into Azure virtual networks with static IPs and NSGs.
+*   **Scripting & Automation:** Scripting of PowerShell cmdlets to manage directories and create accounts.
+*   **IAM Design:** Implementation of RBAC, GS groups, and user assignments.
+*   **Security & Hardening:** Group Policy creation, password policy, administrative delegation, and logon triggers.
+*   **Enterprise Problem Solving:** Problem analysis and solving of DNS resolution, Remote Desktop user permissions, and AD authentication flow problems.
